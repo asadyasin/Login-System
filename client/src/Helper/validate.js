@@ -12,6 +12,35 @@ export async function passwordValidate(values){
 
     return errors;
 }
+/** Validate reset password */
+export async function resetPasswordValidation(values){
+    const errors = passwordVerify({}, values);
+
+    if (values.password !== values.confirm_pwd){
+        errors.exist = toast.error("Password not match...!");
+    }
+
+    return errors;
+}
+
+/** Validate Register Form */
+
+export async function registerValidation(values){
+    const errors = usernameVerify({}, values);
+    passwordVerify(errors, values);
+    emailVerify(errors, values);
+
+    return errors;
+}
+
+/** Validate profile page */
+
+export async function profileValidation(values){
+    const errors = emailVerify({}, values);
+    return errors;
+}
+/** ********************************** */
+
 /** Validate Username */
 
 function usernameVerify (error = {}, values){
@@ -41,4 +70,16 @@ function passwordVerify (error = {}, values){
     }
 
     return error;
+}
+
+/** Validate Email */
+
+function emailVerify (error = {} , values){
+    if (!values.email){
+        error.email = toast.error("Email Required...!");
+    }else if(values.email.includes(" ")){
+        error.email = toast.error("Wrong Email...!");
+    }else if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)){
+        error.email = toast.error("Invalid Email...!");
+    }
 }

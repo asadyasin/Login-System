@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
-import { passwordValidate } from '../Helper/validate'
 
 export default function Recovery() {
     return (

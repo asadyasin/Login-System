@@ -1,18 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import avatar from '../assets/profile.png';
 import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
-import { passwordValidate } from '../Helper/validate';
+import { resetPasswordValidation } from '../Helper/validate';
 
 export default function Reset() {
   
     const formik = useFormik({
         initialValues: {
-            password: ''
+            password: 'asad@123',
+            confirm_pwd: 'asad@123'
         },
-        validate: passwordValidate,
+        validate: resetPasswordValidation,
         validateOnChange: false,
         validateOnBlur: false,
         onSubmit: async values =>{
@@ -23,25 +22,20 @@ export default function Reset() {
     <div className="container mx-auto">
         <Toaster position='top-center' reverseOrder={false}></Toaster>
         <div className="flex justify-center items-center h-screen">
-            <div className={styles.glass}>
+            <div className={styles.glass} style={{ width: "50%" , height: "auto"}}>
 
                 <div className='title flex flex-col items-center'>
-                    <h1 className='text-5xl font-bold'>Enter Password</h1>
+                    <h1 className='text-5xl font-bold'>Reset</h1>
                     <span className='py-4 text-xl w-2/3 text-center text-gray-500'>
-                        Explore More by connecting with us.
+                        Enter new password.
                     </span>
                 </div>
 
-                <form className='py-1' onSubmit={formik.handleSubmit}>
-                    <div className='profile flex justify-center py-4'>
-                        <img className={styles.profile_img} src={avatar} alt="avatar"/>
-                    </div>
+                <form className='py-10' onSubmit={formik.handleSubmit}>
                     <div className='textbox flex flex-col items-center gap-6'>
-                        <input {...formik.getFieldProps('password')} className={styles.textbox} type='password' placeholder='Password'/>
-                        <button className={styles.btn} type='submit'>Sign In</button>
-                    </div>
-                    <div className='text-center py-4'>
-                        <span>Forgot password? <Link className="text-red-500" to="/recovery">Recover Now</Link></span>
+                        <input {...formik.getFieldProps('password')} className={styles.textbox} type='tex' placeholder='New Password'/>
+                        <input {...formik.getFieldProps('confirm_pwd')} className={styles.textbox} type='text' placeholder='Repeat Password'/>
+                        <button className={styles.btn} type='submit'>Reset</button>
                     </div>
                 </form>
             </div>
