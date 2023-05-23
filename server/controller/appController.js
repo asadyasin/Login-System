@@ -1,10 +1,13 @@
 import UserModel from "../models/User.model.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /** POST: http://localhost:8080/api/register */
 
-export async function register(req, res) {
+export const register = async (req, res) => {
     try {
       const { username, password, profile, email } = req.body;
   
@@ -36,38 +39,100 @@ export async function register(req, res) {
   
 
 /** POST: /api/login */
-export async function login(req, res){
-    try {
-      const {email,password} = req.body;
+export const login= async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-      UserModel.findOne({email})
-      .then( user=>{
-        bcrypt.compare(password, user.password)
-          .then(passwordChecked=>{
-            if(!passwordChecked) return res.status(400).send({ error: "Don't have password"})
-            
-            // create jwt token
-            jwt.sign()
-            
-          })
-          .catch(error =>{res.status(400).send({ error: "Password does Not Match"})})
-      })
-      .catch(error =>{res.status(400).send({ error: "User Not Found"})})
-
-    } catch (error) {
-      res.status(500).send({ error: error.message });
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).send({ error: "User Not Found" });
     }
+
+    const passwordMatched = await bcrypt.compare(password, user.password);
+    if (!passwordMatched) {
+      return res.status(400).send({ error: "Password does Not Match" });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.status(200).send({
+      msg: "User login successfully...!",
+      username: user.username,
+      token
+    });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
 }
 
-/** GET: /api/user/name */
-export async function getUser(req, res){
-    res.json('getUser Route')
-}
+
+/** GET: /api/user/username */
+export const getUser = async (req, res) => {
+  try {
+    const { username } = req.params;
+    if (!username) {
+      return res.status(400).send({ error: "Invalid Username" });
+    }
+
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(404).send({ error: "User Not Found" });
+    }
+
+    const { password, ...rest } = user.toObject();
+    return res.status(200).send(rest);
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
+/** GET: /api/user/userId */
+// export const getUser = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     if (!userId) {
+//       return res.status(400).send({ error: "Invalid userId" });
+//     }
+
+//     const user = await UserModel.findById(userId);
+//     if (!user) {
+//       return res.status(404).send({ error: "User Not Found" });
+//     }
+
+//     const { password, ...rest } = user.toObject();
+//     return res.status(200).send(rest);
+//   } catch (error) {
+//     return res.status(500).send({ error: error.message });
+//   }
+// };
 
 /** PUT: /api/updateuser */
-export async function updateUser(req, res){
-    res.json('updateUser Route')
-}
+export const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    
+    if (!userId) {
+      return res.status(500).send({ error: "User not found...!" });
+    }
+
+    const body = req.body;
+    const user = await UserModel.findByIdAndUpdate( {_id : userId }, body);
+
+    if (!user) {
+      return res.status(500).send({ error: "User not found...!" });
+    }
+
+    return res.status(200).send({ msg: "User updated successfully" });
+  } catch (error) {
+    return res.status(401).send({ error: error.message });
+  }
+};
 
 /** GET: /api/generateOTP*/
 export async function generateOTP(req, res){

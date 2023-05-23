@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken } from "../middleware/auth.js"
 const router = Router();
 
 /** Import All Controllers*/
@@ -12,13 +13,13 @@ router.route('/authenticate').post((req,res)=> req.end());
 router.route('/login').post(controller.login);
 
 /** Get Methods */
-router.route('/user/:id').get(controller.getUser);
+router.route('/user/:username').get(controller.getUser);
 router.route('/generateOTP').get(controller.generateOTP);
 router.route('/verifyOTP').get(controller.verifyOTP);
 router.route('/createResetSession').get(controller.createResetSession);
 
 /** Put Methods */
-router.route('/updateUser').put(controller.updateUser);
+router.route('/updateUser').put( verifyToken, controller.updateUser );
 router.route('/resetPassword').put(controller.resetPassword);
 
 
