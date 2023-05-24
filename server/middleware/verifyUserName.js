@@ -1,4 +1,5 @@
-import UserModel from "../models/User.model";
+import UserModel from "../models/User.model.js";
+
 export const verifyUserName = async (req, res, next) => {
     try {
             const { username } = req.method === "GET" ? req.query : req.body ;
