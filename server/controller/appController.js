@@ -1,4 +1,5 @@
 import UserModel from "../models/User.model.js"
+import SessionModel from "../models/session.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
@@ -6,6 +7,7 @@ import otpGenerator from "otp-generator";
 
 dotenv.config();
 
+let activeSessions = {};
 /** POST: http://localhost:8080/api/register */
 
 export const register = async (req, res) => {
@@ -63,6 +65,15 @@ export const login= async (req, res) => {
       { expiresIn: "24h" }
     );
 
+      // Create a new session document in the database
+      const session = new SessionModel({
+        userId: user._id,
+        token
+      });
+  
+      // Save the session document
+      await session.save();
+    
     res.status(200).send({
       msg: "User login successfully...!",
       username: user.username,
@@ -73,6 +84,20 @@ export const login= async (req, res) => {
   }
 }
 
+  /** POST: /api/logout */
+  export const logout = async (req, res) => {
+    try {
+      const { userId } = req.user;
+  
+      // Delete the session document from the database
+      await SessionModel.deleteOne({ userId });
+  
+      res.status(200).send({ msg: "User logged out successfully" });
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  };
+  
 /** GET: /api/user/username */
 export const getUser = async (req, res) => {
   try {
@@ -219,5 +244,17 @@ export const resetPassword = async (req, res) => {
     }
   } catch (error) {
     res.status(401).json({ error: error.message });
+  }
+};
+
+/** GET: /api/loggedinusers */
+export const countLoggedInUsers = async (req, res) => {
+  try {
+    // Count the number of session documents in the database
+    const loggedInUserCount = await SessionModel.countDocuments();
+
+    res.status(200).json({ count: loggedInUserCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
