@@ -80,3 +80,4 @@ export const generateOTP = async ({ username }) => {
     return Promise.reject(error);
   }
 };
+
