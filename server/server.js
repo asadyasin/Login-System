@@ -24,14 +24,11 @@ app.get('/', (req, res) => {
 
 app.use('/api', router);
 
-app.get('/', (req, res) => {
-    res.send(`Server running on ${PORT}`);
-  })
 
 /** Start of server */
 connect().then(()=>{
     try {
-        app.listen(port, () =>{
+        app.listen(PORT, () =>{
             console.log(`Server connected to http://localhost:${PORT}`);
         })
     } catch (error) {
