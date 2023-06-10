@@ -26,14 +26,16 @@ app.use('/api', router);
 
 
 /** Start of server */
-connect().then(()=>{
-    try {
-        app.listen(PORT, () =>{
-            console.log(`Server connected to http://localhost:${PORT}`);
+connect()
+    .then(()=>{
+        try {
+            app.listen(PORT, () =>{
+                console.log(`Server connected to http://localhost:${PORT}`);
+            })
+        } catch (error) {
+            console.log("Cannot connect to the server");
+        }
         })
-    } catch (error) {
-        console.log("Cannot connect to the server");
-    }
-}).catch(error =>{
-    console.log("Invalid Database Connction");
-})
+    .catch(error =>{
+        console.log("Invalid Database Connction");
+    })

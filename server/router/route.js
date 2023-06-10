@@ -20,7 +20,7 @@ router.route('/logout').post( verifyToken, controller.logout);
 router.route('/looggedinusers').get(controller.countLoggedInUsers);
 router.route('/user/:username').get(controller.getUser);
 router.route('/generateOTP').get(verifyUserName,  localVariables,controller.generateOTP);
-router.route('/verifyOTP').get(controller.verifyOTP);
+router.route('/verifyOTP').get(verifyUserName, controller.verifyOTP);
 router.route('/createResetSession').get(controller.createResetSession);
 
 /** Put Methods */

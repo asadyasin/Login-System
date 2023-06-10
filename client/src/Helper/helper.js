@@ -1,4 +1,7 @@
 import axios from 'axios';
+axios.defaults.baseURL = "http://localhost:8080";
+
+
 
 /** Authenticate Function */
 export const authenticate = async (username) => {
@@ -77,7 +80,26 @@ export const generateOTP = async ({ username }) => {
     }
     return code;
   } catch (error) {
-    return Promise.reject(error);
+    return Promise.reject({error});
   }
 };
 
+/** Verify OTP */
+export const verifyOTP = async ({ username, Code }) =>{
+  try {
+    const { data, status } = await axios.get('/api/verifyOTP', { params: { username, Code } });
+    return { data, status };
+  } catch (error) {
+    return Promise.reject({error});
+  }
+}
+
+/**Reset Password */
+export const resetPassword = async ({ username, password }) =>{
+  try {
+    const {data, status } = await axios.put('/api/resetPassword', { username, password });
+    return Promise.resolve({ data, status });
+  } catch (error) {
+    return Promise.reject({error});
+  }
+}
